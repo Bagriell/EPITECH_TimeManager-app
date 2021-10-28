@@ -1,24 +1,34 @@
 <template>
   <div>
-    <h1>Clock Manager</h1>
+    <h1 @click="clock">Clock Manager</h1>
+    <h1 v-if="clockIn">Clock Started</h1>
   </div>
 </template>
 <script>
+import moment from 'moment'
+
 export default {
   name: "ClockManager",
   components: {},
   methods: {
     refresh() {
-      console.log('refresh() ClockManager')
+      // fetch(query);
     },
     clock() {
-      console.log('clock()ClockManager')
+      console.log(moment().format('MMMM Do YYYY, h:mm:ss a'));
+      this.startDateTime = moment().format('MMMM Do YYYY, h:mm:ss a');
+      this.clockIn = true;
     }
   },
   data() {
     return {
-      startDateTime: "",
-      clockIn: false,        // True if work period in progress
+      startDateTime: null,
+      clockIn: false,
+      localTime: 0,
+      seconds: 0,
+      minutes: 0,
+      hours: 0,
+      query: '',
     };
   },
 };
