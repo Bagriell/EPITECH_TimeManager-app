@@ -14,6 +14,7 @@ export default {
 };
 </script>
 
+
 <style>
 #app {
   /* Global style variables for layout, positioning, colors, font, viewport...*/
@@ -22,10 +23,9 @@ export default {
   font-size: 1.2em;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  padding: 0vh 1vw 1vh 0vw;
   display: flex;
   flex-direction: row;
-  background-color: rosybrown;
+  background-color: #21618C;
 }
 
 h1 {

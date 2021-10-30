@@ -31,7 +31,6 @@ export default {
     },
     redirect_to(name_comp) {
       console.log('redirect_to: ', name_comp)
-      alert('you must login in order to use our magnificient software.')
       this.$router.push({ name: name_comp, params: { userid: 0, workingtimeid: 0, username: "unknown"} })
     }
   },
