@@ -1,19 +1,61 @@
 <template>
-  <div class="sidenav-container">
-    <button v-on:click="redirect_to('WorkingTimes')" class ="sidenav-button">WorkingTime</button>
-    <button v-on:click="redirect_to('ClockManager')" class ="sidenav-button">ClockManager</button>
-    <button v-on:click="redirect_to('ChartManager')" class ="sidenav-button">ChartManager</button>
-    <ul>
-      <div class="sidenav-elem">CreateUser</div>
-      <div class="sidenav-elem">UpdateUser</div>
-      <div class="sidenav-elem">getUser</div>
-      <div class="sidenav-elem">DeleteUser</div>
-    </ul>
-    <div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+  <div class="display-info display-flex-direction">
+    <div class="display-info">
+      <q-card dark bordered class="bg-secondary my-card margin-add">
+        <q-card-section>
+          <div class="text-h6">Our Changing Planet</div>
+          <div class="text-subtitle2">by John Doe</div>
+        </q-card-section>
+
+        <q-separator dark inset />
+
+        <q-card-section>
+          {{ lorem }}
+          {{ lorem }}
+          {{ lorem }}
+        </q-card-section>
+      </q-card>
+
+      <q-card dark bordered class="bg-secondary my-card margin-add">
+        <q-card-section>
+          <div class="text-h6">Our Changing Planet</div>
+          <div class="text-subtitle2">by John Doe</div>
+        </q-card-section>
+
+        <q-separator dark inset />
+
+        <q-card-section>
+          {{ lorem }}
+          {{ lorem }}
+          {{ lorem }}
+        </q-card-section>
+      </q-card>
+    </div>
+    <div class="delete-button">
+      <q-btn class="glossy" rounded color="deep-orange" label="Delete Account" @click="confirm = true" />
+    </div>
   </div>
+
+  <q-dialog v-model="confirm" persistent>
+    <q-card>
+      <q-card-section class="row items-center">
+        <q-avatar icon="delete" color="secondary" text-color="white" />
+        <span class="q-ml-sm">Are you sure you want delete this account ?</span>
+      </q-card-section>
+
+      <q-card-actions align="right">
+        <q-btn flat label="Cancel" color="secondary" v-close-popup />
+        <q-btn flat label="Confirme" color="secondary" v-close-popup @click="deleteUser()" />
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
+
 </template>
 
 <script>
+
+import { ref } from 'vue'
+
 export default {
   name: "User",
   components: {},
@@ -40,105 +82,40 @@ export default {
       user: {
         id: 0
       },
-      userid: 0
+      userid: 0,
+      lorem: 'Lorem ipsum dolor sit amet consectetur, adipisicing elit. Natus, ratione eum minus fuga, quasi dicta facilis corporis magnam, suscipit at quo nostrum!',
+      confirm: ref(false),
     };
   },
 };
 </script>
 
 <style scoped>
-.sidenav-container {
-  /* Flexbox for all root component container */
+.display-info {
   display: flex;
-  flex-direction: column;
-
-  /* color */
-  background-color: grey;
-
-  /* sizing */
-  height: 100%;
-  width: auto;
-
-  /* position */
-  position: sticky;
-  top: 0;
-  left: 0;
+  align-items: center;
+  justify-content: space-around;
+  margin: 10px;
 }
 
-/* .sidenav-button {
-} */
+.display-flex-direction {
+  flex-direction: column;
+}
 
-ul {
+.margin-add {
+  margin: 10px
+}
+
+.my-card {
+  width: 100%;
+  max-width: 400px;
+}
+
+.delete-button {
   display: flex;
-  flex-direction: column;
-  background-color: red;
-}
-
-.sidenav-elem {
-  justify-content: center;
-  text-decoration: none;
-  color: white;
-}
-
-.sidenav-container .sidenav-elem:hover {
-  color: red;
-}
-
-/* test loading animated icon */
-.lds-ellipsis {
-  display: inline-block;
-  position: relative;
-  width: 80px;
-  height: 80px;
-}
-.lds-ellipsis div {
-  position: absolute;
-  top: 33px;
-  width: 13px;
-  height: 13px;
-  border-radius: 50%;
-  background: #fff;
-  animation-timing-function: cubic-bezier(0, 1, 1, 0);
-}
-.lds-ellipsis div:nth-child(1) {
-  left: 8px;
-  animation: lds-ellipsis1 0.6s infinite;
-}
-.lds-ellipsis div:nth-child(2) {
-  left: 8px;
-  animation: lds-ellipsis2 0.6s infinite;
-}
-.lds-ellipsis div:nth-child(3) {
-  left: 32px;
-  animation: lds-ellipsis2 0.6s infinite;
-}
-.lds-ellipsis div:nth-child(4) {
-  left: 56px;
-  animation: lds-ellipsis3 0.6s infinite;
-}
-@keyframes lds-ellipsis1 {
-  0% {
-    transform: scale(0);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
-@keyframes lds-ellipsis3 {
-  0% {
-    transform: scale(1);
-  }
-  100% {
-    transform: scale(0);
-  }
-}
-@keyframes lds-ellipsis2 {
-  0% {
-    transform: translate(0, 0);
-  }
-  100% {
-    transform: translate(24px, 0);
-  }
+  align-items: center;
+  justify-content: space-around;
+  margin: 10px;
 }
 
 </style>
