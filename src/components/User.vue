@@ -4,31 +4,74 @@
     <button v-on:click="redirect_to('ClockManager')" class ="sidenav-button">ClockManager</button>
     <button v-on:click="redirect_to('ChartManager')" class ="sidenav-button">ChartManager</button>
     <ul>
-      <div class="sidenav-elem">CreateUser</div>
-      <div class="sidenav-elem">UpdateUser</div>
-      <div class="sidenav-elem">getUser</div>
-      <div class="sidenav-elem">DeleteUser</div>
+      <div class="sidenav-elem">CreateUser
+        <input type="text" name="username" v-model="user.username" placeholder="Username" />
+        <input type="text" name="password" v-model="user.email" placeholder="Email" />
+        <button type="button" v-on:click="createUser()">Register</button>
+      </div>
+      <div class="sidenav-elem" @click="updateUser()">UpdateUser</div>
+      <div class="sidenav-elem" @click="getAllUsers()">getUser</div>
+      <div class="sidenav-elem" @click="deleteUser()">DeleteUser</div>
     </ul>
     <div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
   </div>
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   name: "User",
   components: {},
   methods: {
     createUser() {
-      console.log("createuser");
+      axios.post(this.queries.baseURL, {
+        users: {
+          username: this.user.username,
+          email: this.user.email,
+          },
+        }
+        ).then(function( response ){
+                this.users = response.data;
+                this.getUser()
+
+            }.bind(this));
     },
     updateUser() {
       console.log("updateuser");
     },
     getUser() {
-      console.log("getUser");
+      axios.get(this.queries.baseURL + "?username=" + this.user.username + "&email=" + this.user.email)
+        .then(function( response ){
+          this.users = response.data;
+
+          // DEBUG CREATED USER
+          for (let index = 0; index < this.users.data.length; index++) {
+            console.log("USERNAME : " + this.users.data[index].username);
+            console.log("EMAIL : " + this.users.data[index].email);
+            console.log("ID : " + this.users.data[index].id);
+            this.user.id = this.users.data[index].id;
+          }
+            }.bind(this));
+    },
+    getAllUsers() {
+      axios.get(this.queries.baseURL)
+        .then(function( response ){
+          this.users = response.data;
+
+          // DEBUG CREATED USERS
+          for (let index = 0; index < this.users.data.length; index++) {
+            console.log("USERNAME : " + this.users.data[index].username);
+            console.log("EMAIL : " + this.users.data[index].email);
+            console.log("ID : " + this.users.data[index].id);
+          }
+            }.bind(this));
     },
     deleteUser() {
-      console.log("deleteUser");
+        axios.delete(this.queries.baseURL + "/" + this.user.id
+        ).then(function( response ){
+                this.users = response.data;
+            }.bind(this));
     },
     redirect_to(name_comp) {
       console.log('redirect_to: ', name_comp)
@@ -38,9 +81,16 @@ export default {
   data() {
     return {
       user: {
-        id: 0
+        id: 0,
+        username: "",
+        email: ""
       },
-      userid: 0
+      userid: 0,
+      queries: {
+        baseURL: "http://localhost:4000/api/users",
+        get getUserByNameAndEmail() { return (this.queries.baseURL+ "?" + "username=" + this.user.username + "&" + "email=" + this.user.email)
+      }},
+      users: {},
     };
   },
 };
