@@ -4,74 +4,100 @@
     <button v-on:click="redirect_to('ClockManager')" class ="sidenav-button">ClockManager</button>
     <button v-on:click="redirect_to('ChartManager')" class ="sidenav-button">ChartManager</button>
     <ul>
-      <div class="sidenav-elem">CreateUser
+      <div class="sidenav-elem" v-if="this.user.id == 0">
         <input type="text" name="username" v-model="user.username" placeholder="Username" />
         <input type="text" name="password" v-model="user.email" placeholder="Email" />
-        <button type="button" v-on:click="createUser()">Register</button>
+        <button type="button" v-on:click="create()">Register</button>
       </div>
-      <div class="sidenav-elem" @click="updateUser()">UpdateUser</div>
-      <div class="sidenav-elem" @click="getAllUsers()">getUser</div>
-      <div class="sidenav-elem" @click="deleteUser()">DeleteUser</div>
+      <div class="sidenav-elem" v-else-if="this.user.id != 0">
+        <div class="profile-info">
+          <button>
+            Welcome {{ this.user.username }}!
+          </button>
+          <div>----------------</div>
+          <div>
+              User Info :
+            <div>
+                <button>
+                  Email: {{ this.user.email }}
+                </button>
+            </div>
+            <div>
+              <button>
+                ID: {{ this.user.id }}
+              </button>
+            </div>
+              ----------------
+          </div>
+        </div>
+      </div>
+      <div class="sidenav-elem" @click="showEditWindow()">UpdateUserInfo</div>
+      <div class="sidenav-elem" v-if="this.editUserInfo == true">
+        <input type="text" name="username" v-model="user.username" placeholder="Username" />
+        <input type="text" name="password" v-model="user.email" placeholder="Email" />
+        <button type="button" v-on:click="update()">Update</button>
+      </div>
+      <div class="sidenav-elem" @click="get()">getUser</div>
+      <div class="sidenav-elem" @click="deleteActiveUser()">DeleteUser</div>
     </ul>
     <div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
   </div>
 </template>
 
 <script>
-import axios from 'axios';
+import {createUser, updateUser, getUser, getAllUsers, deleteUser} from './usersRequest'
 
 export default {
   name: "User",
   components: {},
   methods: {
-    createUser() {
-      axios.post(this.queries.baseURL, {
-        users: {
-          username: this.user.username,
-          email: this.user.email,
-          },
+    async create() {
+      await createUser(this.user.username, this.user.email).then(
+        response => {
+          this.user.id = response.data.data.id;
+          this.user.username = response.data.data.username;
+          this.user.email = response.data.data.email;
         }
-        ).then(function( response ){
-                this.users = response.data;
-                this.getUser()
+      );
+    },
+    async update() {
+      await updateUser(this.user.username, this.user.email, this.user.id).then(
+        response => {
+          this.user.username = response.data.data.username;
+          this.user.email = response.data.data.email;
+        }
+      )
+    },
+    async get() {
+      await getUser(this.user.id).then(
+        response => {
+          console.log("USERNAME : " + response.data.data.username);
+          console.log("EMAIL : " + response.data.data.email);
+          console.log("ID : " + response.data.data.id);
 
-            }.bind(this));
+          this.user.username = response.data.data.username;
+          this.user.email = response.data.data.email;
+        }
+      );
     },
-    updateUser() {
-      console.log("updateuser");
-    },
-    getUser() {
-      axios.get(this.queries.baseURL + "?username=" + this.user.username + "&email=" + this.user.email)
-        .then(function( response ){
-          this.users = response.data;
+    async getAll() {
+      await getAllUsers().then(
+        response => {
+            for (let index = 0; index < response.data.data.length; index++) {
+              this.users.id[index] = response.data.data[index].id;
+              this.users.username[index] = response.data.data[index].username;
+              this.users.email[index] = response.data.data[index].email;
 
-          // DEBUG CREATED USER
-          for (let index = 0; index < this.users.data.length; index++) {
-            console.log("USERNAME : " + this.users.data[index].username);
-            console.log("EMAIL : " + this.users.data[index].email);
-            console.log("ID : " + this.users.data[index].id);
-            this.user.id = this.users.data[index].id;
-          }
-            }.bind(this));
+              console.log("USERNAME : " + this.users.username[index]);
+              console.log("EMAIL : " + this.users.email[index]);
+              console.log("ID : " + this.users.id[index]);
+            }
+        }
+      )
     },
-    getAllUsers() {
-      axios.get(this.queries.baseURL)
-        .then(function( response ){
-          this.users = response.data;
-
-          // DEBUG CREATED USERS
-          for (let index = 0; index < this.users.data.length; index++) {
-            console.log("USERNAME : " + this.users.data[index].username);
-            console.log("EMAIL : " + this.users.data[index].email);
-            console.log("ID : " + this.users.data[index].id);
-          }
-            }.bind(this));
-    },
-    deleteUser() {
-        axios.delete(this.queries.baseURL + "/" + this.user.id
-        ).then(function( response ){
-                this.users = response.data;
-            }.bind(this));
+    showEditWindow() {this.editUserInfo = !this.editUserInfo},
+    async deleteActiveUser() {
+        await deleteUser(this.user.id);
     },
     redirect_to(name_comp) {
       console.log('redirect_to: ', name_comp)
@@ -85,12 +111,16 @@ export default {
         username: "",
         email: ""
       },
+      editUserInfo: false,
       userid: 0,
       queries: {
         baseURL: "http://localhost:4000/api/users",
-        get getUserByNameAndEmail() { return (this.queries.baseURL+ "?" + "username=" + this.user.username + "&" + "email=" + this.user.email)
-      }},
-      users: {},
+      },
+      users: {
+        id: [],
+        username: [],
+        email: [],
+      },
     };
   },
 };
