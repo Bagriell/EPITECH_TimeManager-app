@@ -5,15 +5,15 @@
       
       <q-space />
 
-      <q-btn color="secondary" label="WorkingTimes" />
+      <q-btn color="secondary" label="Dashboard" />
 
       <q-space />
       <div v-if="loggedIn">
         <q-btn-dropdown stretch flat label="HB">
           <q-list>
-            <q-item clickable v-close-popup>
+            <q-item v-on:click="redirect_to('WorkingTimes')" clickable v-close-popup>
               <q-item-section>
-                <q-item-label>Profile</q-item-label>
+                <q-item-label>Dashboard</q-item-label>
               </q-item-section>
               <q-item-section side>
                 <q-icon name="info" />
@@ -69,9 +69,9 @@
             vertical
             class="text-teal"
           >
-            <q-tab name="mails" icon="mail" label="Mails" />
-            <q-tab name="alarms" icon="alarm" label="Alarms" />
-            <q-tab name="movies" icon="movie" label="Movies" />
+            <q-tab name="Profile" label="Profile" />
+            <q-tab name="Changes"  label="Changes" />
+            <q-tab name="Team" label="Team" />
           </q-tabs>
         </q-drawer>
 
@@ -85,19 +85,18 @@
                 transition-prev="jump-up"
                 transition-next="jump-up"
               >
-                <q-tab-panel name="mails">
-                  <div class="text-h4 q-mb-md">Mails</div>
-                  <p>{{lorem}}</p>
-                  <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis praesentium cumque magnam odio iure quidem, quod illum numquam possimus obcaecati commodi minima assumenda consectetur culpa fuga nulla ullam. In, libero.</p>
+                <q-tab-panel name="Profile">
+                  <div class="text-h4 q-mb-md">Profile</div>
+                  <div></div>
                 </q-tab-panel>
 
-                <q-tab-panel name="alarms">
+                <q-tab-panel name="Changes">
                   <div class="text-h4 q-mb-md">Alarms</div>
                   <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis praesentium cumque magnam odio iure quidem, quod illum numquam possimus obcaecati commodi minima assumenda consectetur culpa fuga nulla ullam. In, libero.</p>
                   <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis praesentium cumque magnam odio iure quidem, quod illum numquam possimus obcaecati commodi minima assumenda consectetur culpa fuga nulla ullam. In, libero.</p>
                 </q-tab-panel>
 
-                <q-tab-panel name="movies">
+                <q-tab-panel name="Team">
                   <div class="text-h4 q-mb-md">Movies</div>
                   <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis praesentium cumque magnam odio iure quidem, quod illum numquam possimus obcaecati commodi minima assumenda consectetur culpa fuga nulla ullam. In, libero.</p>
                   <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis praesentium cumque magnam odio iure quidem, quod illum numquam possimus obcaecati commodi minima assumenda consectetur culpa fuga nulla ullam. In, libero.</p>
@@ -133,8 +132,14 @@ export default {
       lorem: 'Lorem ipsum dolor sit amet consectetur, adipisicing elit. Natus, ratione eum minus fuga, quasi dicta facilis corporis magnam, suscipit at quo nostrum!',
       tab: ref('mails'),
       loggedIn: ref(true),
-      fab2: ref(true),
+      fab2: ref(false),
 
+    }
+  },
+  methods: {
+    redirect_to(name_comp) {
+      console.log('redirect_to: ', name_comp)
+      this.$router.push({ name: name_comp, params: { userid: 0, workingtimeid: 0, username: "unknown"} })
     }
   }
 };
