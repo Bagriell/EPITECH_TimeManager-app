@@ -45,12 +45,13 @@
 </template>
 
 <script>
-import {createUser, updateUser, getUser, getAllUsers, deleteUser} from './usersRequest'
+import {createUser, updateUser, getAllUsers, deleteUser, getUserByUsernameAndEmail} from './usersRequest'
 
 export default {
   name: "User",
   components: {},
   methods: {
+    // CREATE a new User, using username + email combo. THEN it store the id,email,username in the data of the component
     async create() {
       await createUser(this.user.username, this.user.email).then(
         response => {
@@ -60,23 +61,34 @@ export default {
         }
       );
     },
+      // UPDATE the current User, using username + email combo. THEN it update the email,username in the data of the component
     async update() {
       await updateUser(this.user.username, this.user.email, this.user.id).then(
         response => {
           this.user.username = response.data.data.username;
           this.user.email = response.data.data.email;
+
+          // DEBUG LOG - For testing
+          console.log(response);
         }
       )
     },
+    // GET the current user, using Username and Email combo. THEN it update the id,username,email in the data of the component AND STORE the ID value of the response to the Local Storage.
     async get() {
-      await getUser(this.user.id).then(
+      await getUserByUsernameAndEmail(this.user.username, this.user.email).then(
         response => {
-          console.log("USERNAME : " + response.data.data.username);
-          console.log("EMAIL : " + response.data.data.email);
-          console.log("ID : " + response.data.data.id);
-
-          this.user.username = response.data.data.username;
-          this.user.email = response.data.data.email;
+          
+          this.user.username = response.data.data[0].username;
+          this.user.email = response.data.data[0].email;
+          this.user.id = response.data.data[0].id;
+          
+          localStorage.userID = response.data.data[0].id;
+          
+          // DEBUG LOG - For testing
+          console.log("USERNAME : " + response.data.data[0].username);
+          console.log("EMAIL : " + response.data.data[0].email);
+          console.log("ID : " + response.data.data[0].id);
+          console.log(response);
         }
       );
     },
@@ -88,17 +100,23 @@ export default {
               this.users.username[index] = response.data.data[index].username;
               this.users.email[index] = response.data.data[index].email;
 
+              // DEBUG LOG - For testing
               console.log("USERNAME : " + this.users.username[index]);
               console.log("EMAIL : " + this.users.email[index]);
               console.log("ID : " + this.users.id[index]);
+              console.log(response);
             }
         }
       )
     },
+    // Simply SHOW / HIDE Input fields for updating the current Username and Email of the User
     showEditWindow() {this.editUserInfo = !this.editUserInfo},
+    // DELETE ACTIVE/NEWLY CREATED USER using the correct ID, AND REMOVE LOCAL STORAGE KEY
     async deleteActiveUser() {
         await deleteUser(this.user.id);
+        localStorage.removeItem("userID");
     },
+    // SWITCH BETWEEN COMPONENTS (Working Times, Clock...)
     redirect_to(name_comp) {
       console.log('redirect_to: ', name_comp)
       this.$router.push({ name: name_comp, params: { userid: 0, workingtimeid: 0, username: "unknown"} })
@@ -123,6 +141,15 @@ export default {
       },
     };
   },
+  mounted() {
+    if (localStorage.userID)
+      this.user.id = localStorage.userID;
+  },
+  watch: {
+    userID(newUserID) {
+      localStorage.userID = newUserID;
+    }
+  }
 };
 </script>
 

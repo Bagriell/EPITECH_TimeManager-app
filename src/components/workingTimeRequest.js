@@ -11,6 +11,7 @@ export async function getAllWorkingTimes()
     );
 }
 
+// NOT WORKING CURRENTLY BECAUSE NO WORKING TIMES CAN BE CREATED YET
 export async function getWorkingTime(workingTimeID)
 {
     return (
@@ -20,6 +21,7 @@ export async function getWorkingTime(workingTimeID)
     );
 }
 
+// NOT WORKING CURRENTLY BECAUSE NO WORKING TIMES CAN BE CREATED YET
 export async function getAllWorkingTimesFromUser(userID)
 {
     return (

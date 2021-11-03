@@ -18,8 +18,12 @@ export async function updateUser(username, email, userID) {
     }));
 }
 
-export async function getUser(userID) {
+export async function getUserByID(userID) {
     return(axios.get("http://localhost:4000/api/users/" + userID));
+}
+
+export async function getUserByUsernameAndEmail(username, email) {
+    return(axios.get("http://localhost:4000/api/users?username=" + username + "&email=" + email));
 }
 
 export async function getAllUsers() {
