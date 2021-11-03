@@ -1,6 +1,6 @@
 <template>
   <div class="sidenav-container">
-    <button v-on:click="redirect_to('WorkingTimes')" class ="sidenav-button">WorkingTime</button>
+    <button v-on:click="redirect_to('WorkingTime')" class ="sidenav-button">WorkingTime</button>
     <button v-on:click="redirect_to('ClockManager')" class ="sidenav-button">ClockManager</button>
     <button v-on:click="redirect_to('ChartManager')" class ="sidenav-button">ChartManager</button>
     <ul>
