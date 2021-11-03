@@ -1,43 +1,74 @@
 <template>
-    <div class="q-pa-md" style="max-width: 400px">
+    <div class="display-elements">
 
-        <q-form
-        @submit="onSubmit"
-        @reset="onReset"
-        class="q-gutter-md"
-        >
-            <q-input
-                filled
-                v-model="name"
-                label="Your Username"
-                hint="Username"
-                lazy-rules
-                :rules="[ val => val && val.length > 0 || 'Please type something']"
-            />
+        <div class="q-pa-md" style="max-width: 600px; width: 600px">
+            <h3>Login</h3>
+            <q-form
+                @submit="logInUser"
+                class="q-gutter-md"
+            >
+                <q-input
+                    filled
+                    v-model="usernameLogin"
+                    label="Your Username"
+                    hint="Username"
+                    lazy-rules
+                    :rules="[ val => val && val.length > 0 || 'Please type something']"
+                />
 
-            <q-input
-                filled
-                v-model="age"
-                label="email"
-                lazy-rules
-                :rules="[
-                val => val !== null && val !== '' || 'Please type your email'
-                ]"
-            />
+                <q-input
+                    filled
+                    v-model="emailLogin"
+                    label="email"
+                    lazy-rules
+                    :rules="[
+                    val => val !== null && val !== '' || 'Please type your email'
+                    ]"
+                />
+                <div>
+                    <q-btn label="Submit" type="submit" color="secondary"/>
+                </div>
+            </q-form>
 
-            <q-toggle v-model="accept" label="I accept the license and terms" />
+        </div>
+        <q-separator vertical inset />
+        <div class="q-pa-md" style="max-width: 600px; width:600px">
+            <h3>Sign In</h3>
+            <q-form
+                @submit="signInUser"
+                class="q-gutter-md"
+            >
+                <q-input
+                    filled
+                    v-model="usernameSignIn"
+                    label="Your Username"
+                    hint="Username"
+                    lazy-rules
+                    :rules="[ val => val && val.length > 0 || 'Please type something']"
+                />
 
-            <div>
-                <q-btn label="Submit" type="submit" color="primary"/>
-                <q-btn label="Reset" type="reset" color="primary" flat class="q-ml-sm" />
-            </div>
-        </q-form>
+                <q-input
+                    filled
+                    v-model="emailSignIn"
+                    label="email"
+                    lazy-rules
+                    :rules="[
+                    val => val !== null && val !== '' || 'Please type your email'
+                    ]"
+                />
+                <div>
+                    <q-btn label="Submit" type="submit" color="secondary"/>
+                </div>
+            </q-form>
 
+        </div>
     </div>
 </template>
 
 <script>
 import { ref } from 'vue'
+import {getUserByUsernameAndEmail, createUser} from './usersRequest'
+
 
 export default {
   name: "Login",
@@ -45,25 +76,34 @@ export default {
     data () {
         
         return {
-            age: ref(null),
-            accept: ref(false),
-            name: ref(null),
+            emailLogin: ref(null),
+            usernameLogin: ref(null),
+            
+            emailSignIn: ref(null),
+            usernameSignIn: ref(null),
         }
     },
     methods: {
-        showData() {
-            console.log(this.name, this.age)
+        async logInUser() {
+            await getUserByUsernameAndEmail(this.usernameLogin, this.emailLogin).then(
+                response => {
+                    console.log(response);
+                    localStorage.userID = response.data.data[0].id;
+                    this.emitToRefresh();
+                },
+                err => console.log("haroun error: " +err)
+            );
         },
-        onSubmit () {
-            if (this.accept !== true) {
-                return (this.onReset())
-            }
-            console.log(this.name, this.age);
+        async signInUser() {
+            await createUser(this.usernameSignIn, this.emailSignIn).then(
+                response => {
+                    console.log(response)
+                },
+                err => console.log(err)
+            );
         },
-        onReset () {
-            this.name = null
-            this.age = null
-            this.accept = false
+        emitToRefresh() {
+            this.$emit('custon-event-name', { message: 'success' })
         }
     }
 
@@ -71,5 +111,17 @@ export default {
 </script>
 
 <style>
+
+.display-elements {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 10px;
+    
+}
+
+.div-size {
+    width: 90%;
+}
 
 </style>

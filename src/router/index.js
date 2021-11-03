@@ -27,9 +27,14 @@ const routes = [
     component: () => import('../components/ChartManager.vue')
   },
   {
-    path: '/authentification',
-    name: 'Login',
-    component: () => import('../components/Login.vue')
+    path: '/user/:userid',
+    name: 'User',
+    component: () => import ('../components/User.vue')
+  },
+  {
+    path: '/',
+    name: 'User',
+    component: () => import('../components/User.vue')
   }
 ]
 
