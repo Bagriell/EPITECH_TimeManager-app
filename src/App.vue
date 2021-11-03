@@ -1,16 +1,39 @@
 <template>
-  <User></User>
-  <router-view></router-view>
+  <div v-if="!isLogin">
+    <login-view></login-view>
+  </div>
+  <div v-else>
+
+    <router-view></router-view>
+  </div>
 </template>
 
 <script>
-import User from "@/components/User.vue";
+import LoginVue from './components/Login.vue';
 
 export default {
   name: "App",
   components: {
-    User,
+    "login-view": LoginVue
   },
+  data() {
+    return {
+      isLogin: false,
+    }
+  },
+  watch: {
+    checkLocalStorage() {
+      if (localStorage.getItem("userID")) {
+        this.isLogin = true
+      }
+      else {
+        this.isLogin = false
+      }
+    },
+  },
+  methods: {
+    
+  }
 };
 </script>
 
@@ -23,9 +46,6 @@ export default {
   font-size: 1.2em;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  display: flex;
-  flex-direction: row;
-  background-color: #21618C;
 }
 
 h1 {
