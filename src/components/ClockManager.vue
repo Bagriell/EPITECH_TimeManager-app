@@ -8,6 +8,7 @@
 <script>
 import moment from 'moment' //-> Lib to use for managing Date Format
 import {getClockFromUser, addClock} from './clockManagerRequest'
+import {Role} from './userRole'
 
 export default {
   name: "ClockManager",
@@ -35,6 +36,7 @@ export default {
 
       user: {
         id: 0,
+        role: Role.User
       },
       clock: {
         time: moment().format('MMMM Do YYYY, h:mm:ss a'),

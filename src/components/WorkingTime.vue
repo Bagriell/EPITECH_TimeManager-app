@@ -10,6 +10,7 @@
 <script>
 import {getAllWorkingTimes, getWorkingTime, getAllWorkingTimesFromUser, addWorkingTime, editWorkingTime, deleteWorkingTime} from './workingTimeRequest'
 import moment from 'moment' //-> Lib to use for managing Date Format
+import {Role} from './userRole'
 
 export default {
   name: "WorkingTime",
@@ -22,6 +23,7 @@ export default {
             this.users.id[index] = response.data.data[index].id;
             this.users.username[index] = response.data.data[index].username;
             this.users.email[index] = response.data.data[index].email;
+            this.users.role[index] = response.data.data[index].role;
 
             console.log("USERNAME : " + this.users.username[index]);
             console.log("EMAIL : " + this.users.email[index]);
@@ -31,7 +33,6 @@ export default {
       );
     },
     async get() {
-      return (
         await getWorkingTime(this.workingTime.id).then(
           response => {
             this.workingTime.id = response.data.data.id;
@@ -39,10 +40,8 @@ export default {
             this.workingTime.endDate = response.data.data.endDate;
           }
         )
-      );
     },
     async getUserAll() {
-      return (
         await getAllWorkingTimesFromUser(this.user.id).then(
           response => {
           for (let index = 0; index < response.data.data.length; index++) {
@@ -56,7 +55,6 @@ export default {
           }
           }
         )
-      );
     },
     async add() {
       await addWorkingTime(this.user.id, this.workingTime.startDate, this.workingTime.endDate);
@@ -73,6 +71,7 @@ export default {
     return {
       user: {
         id: this.$route?.params?.userid ? this.$route.params.userid : 0,
+        role: Role.User
       },
       workingTime: {
         id: this.$route?.params?.workingtimeid ? this.$route.params.userid : 0,
@@ -88,7 +87,8 @@ export default {
       users: {
         id: [],
         username: [],
-        email: []
+        email: [],
+        role: []
       }
     };
   },
