@@ -31,6 +31,41 @@ export async function getAllWorkingTimesFromUser(userID)
     );
 }
 
-// SETTERS - Add new Working Times 
+// POST - Add new Working time
 
-// !!TODO ONCE BACK END IMPLEMENTATION DONE!!
+export function addWorkingTime(userID, startDate, endDate)
+{
+    return (
+        axios.post("http://localhost:4000/api/workingtimes/" + userID, {
+            workingtimes: {
+                start: startDate,
+                end: endDate,
+                user: userID,
+            }
+        })
+    );
+}
+
+// PUT - Modify existing Working time
+export function editWorkingTime(workingTimeID, userID, startDate, endDate)
+{
+    return (
+        axios.put("http://localhost:4000/api/workingtimes/" + workingTimeID, {
+            workingtimes: {
+                start: startDate,
+                end: endDate,
+                user: userID,
+            }
+        })
+    );
+}
+
+// DELETE - Remove existing Working time
+export function deleteWorkingTime(workingTimeID)
+{
+    return (
+        axios.delete("http://localhost:4000/api/workingtimes/" + workingTimeID)
+    );
+}
+
+// ---> !!TOTEST ONCE BACK END IMPLEMENTATION DONE!!
