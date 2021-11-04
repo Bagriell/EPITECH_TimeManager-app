@@ -46,6 +46,7 @@
 
 <script>
 import {createUser, updateUser, getAllUsers, deleteUser, getUserByUsernameAndEmail} from './usersRequest'
+import {Role} from './userRole'
 
 export default {
   name: "User",
@@ -127,7 +128,8 @@ export default {
       user: {
         id: 0,
         username: "",
-        email: ""
+        email: "",
+        role: Role.User
       },
       editUserInfo: false,
       userid: 0,
@@ -144,6 +146,10 @@ export default {
   mounted() {
     if (localStorage.userID)
       this.user.id = localStorage.userID;
+  },
+  computed: {
+    isAdmin() {return (this.user.role === Role.Admin)},
+    isManager() {return (this.user.role === Role.Manager)},
   },
   watch: {
     userID(newUserID) {

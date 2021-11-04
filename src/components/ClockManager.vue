@@ -4,34 +4,52 @@
     <h1 v-if="clockIn">Clock Started</h1>
   </div>
 </template>
+
 <script>
-import moment from 'moment'
+import moment from 'moment' //-> Lib to use for managing Date Format
+import {getClockFromUser, addClock} from './clockManagerRequest'
 
 export default {
   name: "ClockManager",
   components: {},
   methods: {
-    refresh() {
-      // fetch(query);
+    async add() {
+      await addClock(this.user.id, this.clock.time, this.clock.status);
     },
-    clock() {
-      console.log(moment().format('MMMM Do YYYY, h:mm:ss a'));
-      this.startDateTime = moment().format('MMMM Do YYYY, h:mm:ss a');
-      this.clockIn = true;
-    }
+    async get() {
+      await getClockFromUser(this.user.id).then(
+        response => {
+          this.clock.time = response.data.data.time;
+          this.clock.status = response.data.data.status;
+        }
+      )
+    },
   },
   data() {
     return {
-      startDateTime: null,
-      clockIn: false,
       localTime: 0,
       seconds: 0,
       minutes: 0,
       hours: 0,
       query: '',
+
+      user: {
+        id: 0,
+      },
+      clock: {
+        time: moment().format('MMMM Do YYYY, h:mm:ss a'),
+        status: false,
+        reset() {this.time = moment().format('MMMM Do YYYY, h:mm:ss a'); this.status = false;},
+      }
     };
+  },
+  mounted(){
+    if (localStorage.userID)
+      this.user.id = localStorage.getItem("userID");
+
   },
 };
 </script>
+
 <style>
 </style>

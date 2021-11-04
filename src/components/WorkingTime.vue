@@ -8,7 +8,8 @@
 </template>
 
 <script>
-import {getAllWorkingTimes, getWorkingTime, getAllWorkingTimesFromUser} from './workingTimeRequest'
+import {getAllWorkingTimes, getWorkingTime, getAllWorkingTimesFromUser, addWorkingTime, editWorkingTime, deleteWorkingTime} from './workingTimeRequest'
+import moment from 'moment' //-> Lib to use for managing Date Format
 
 export default {
   name: "WorkingTime",
@@ -40,7 +41,7 @@ export default {
         )
       );
     },
-    async getUserWorkingTimes() {
+    async getUserAll() {
       return (
         await getAllWorkingTimesFromUser(this.user.id).then(
           response => {
@@ -57,14 +58,15 @@ export default {
         )
       );
     },
-    createWorkingTime() {
-      console.log("createWorkingTime");
+    async add() {
+      await addWorkingTime(this.user.id, this.workingTime.startDate, this.workingTime.endDate);
     },
-    updateWorkingTime() {
-      console.log("updateWorkingTime");
+    async edit() {
+      await editWorkingTime(this.workingTime.id, this.user.id, this.workingTime.startDate, this.workingTime.endDate);
     },
-    deleteWorkingTime() {
-      console.log("deleteWorkingTime");
+    async delete() {
+      await deleteWorkingTime(this.workingTime.id);
+      this.workingTime.reset();
     },
   },
   data() {
@@ -74,8 +76,9 @@ export default {
       },
       workingTime: {
         id: this.$route?.params?.workingtimeid ? this.$route.params.userid : 0,
-        startDate: "YYY-MM-DD HH:mm:ss",
-        endDate: "YYY-MM-DD HH:mm:ss"
+        startDate: moment().format('MMMM Do YYYY, h:mm:ss a'),
+        endDate: moment().format('MMMM Do YYYY, h:mm:ss a'),
+        reset() {this.id = 0; this.startDate = moment().format('MMMM Do YYYY, h:mm:ss a'); this.endDate = moment().format('MMMM Do YYYY, h:mm:ss a') }
       },
       workingTimes: {
         id: [],
@@ -88,6 +91,11 @@ export default {
         email: []
       }
     };
+  },
+  mounted(){
+    if (localStorage.userID)
+      this.user.id = localStorage.getItem("userID");
+
   },
 };
 
