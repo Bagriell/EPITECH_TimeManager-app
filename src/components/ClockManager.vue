@@ -1,7 +1,31 @@
 <template>
   <div>
-    <h1 @click="clock">Clock Manager</h1>
-    <h1 v-if="clockIn">Clock Started</h1>
+    <div class="q-pa-md">
+      <div class="q-gutter-md">
+        <q-time 
+          v-model="this.clock.time"
+          mask="hh:mm A" 
+          readonly
+        />
+        <div v-if="this.clock.status === false">
+          <q-btn 
+            label="Start"
+            type="submit" 
+            color="secondary"
+            @click="setup()"
+            />
+        </div>
+        <div v-else-if="this.clock.status === true">
+          <q-btn 
+            label="Stop"
+            type="submit" 
+            color="negative"
+            @click="setup()"
+            />
+        </div>
+      </div>
+    </div>
+    
   </div>
 </template>
 
@@ -25,9 +49,20 @@ export default {
         }
       )
     },
+    setup() {
+      this.clock.status = !this.clock.status
+
+      // if (this.clock.status)
+        // this.add()
+      
+      console.log(this.clock.status? 
+        "Started Working Day at: " + this.clock.time :
+        "Finish worked at: " + this.clock.time);
+    }
   },
   data() {
     return {
+      interval:null,
       localTime: 0,
       seconds: 0,
       minutes: 0,
@@ -39,17 +74,25 @@ export default {
         role: Role.User
       },
       clock: {
-        time: moment().format('MMMM Do YYYY, h:mm:ss a'),
+        time: moment().format('h:mm A'),
         status: false,
-        reset() {this.time = moment().format('MMMM Do YYYY, h:mm:ss a'); this.status = false;},
+        reset() {this.time = moment().format('h:mm A'); this.status = false;},
       }
     };
   },
   mounted(){
-    if (localStorage.userID)
+    if (localStorage.userID) {
       this.user.id = localStorage.getItem("userID");
-
+    }
+      this.clock.time = moment().format('h:mm A');
+    this.interval=setInterval(() => {
+      this.clock.time = moment().format('h:mm A');
+      // this.get(); -- API CALL TO GET TIME EVERY SEC
+    }, 1000)
   },
+   unmounted(){
+    clearInterval(this.interval)
+   },
 };
 </script>
 
