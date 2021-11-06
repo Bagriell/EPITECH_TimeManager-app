@@ -35,6 +35,16 @@ const routes = [
     path: '/',
     name: 'User',
     component: () => import('../components/User.vue')
+  },
+  {
+    path: '/users',
+    name: 'Users',
+    component: () => import('../components/admin/Users.vue')
+  },
+  {
+    path: '/teams',
+    name: 'Teams',
+    component: () => import('../components/admin/Teams.vue')
   }
 ]
 

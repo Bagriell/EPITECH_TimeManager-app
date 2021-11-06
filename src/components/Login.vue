@@ -69,9 +69,8 @@
 import { ref } from 'vue'
 import {getUserByUsernameAndEmail, createUser} from './usersRequest'
 
-
 export default {
-  name: "Login",
+    name: "Login",
 
     data () {
         

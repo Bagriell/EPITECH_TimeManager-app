@@ -1,15 +1,18 @@
 <template>
   <div class="q-pa-md">
     <q-toolbar class="bg-secondary text-white q-my-md shadow-2">
-      <q-btn v-if="isLogin" flat @click="0" round dense icon="menu" />
-      
+      <q-btn flat round dense icon="menu" v-if="isLogin" />
       <q-space />
 
-      <q-btn v-if="isLogin" color="secondary" label="Dashboard" />
+      <q-btn v-if="isLogin" color="secondary" label="Dashboard" v-on:click="redirect_to('User')"/>
+      <q-space />
+      <q-btn v-if="isLogin && admin" color="secondary" label="Users" v-on:click="redirect_to('Users')"/>
+      <q-space />
+      <q-btn v-if="isLogin && admin" color="secondary" label="Teams" v-on:click="redirect_to('Teams')"/>
 
       <q-space />
       <div v-if="isLogin">
-        <q-btn-dropdown stretch flat label="HB">
+        <q-btn-dropdown stretch flat :label='user.username ? user && user.username : 0 '>
           <q-list>
             <q-item v-on:click="redirect_to('WorkingTimes')" clickable v-close-popup>
               <q-item-section>
@@ -27,7 +30,7 @@
                 <q-icon name="info" />
               </q-item-section>
             </q-item>
-            <q-item clickable v-close-popup>
+            <q-item clickable v-close-popup @click="disconnectFunc()">
               <q-item-section>
                 <q-item-label>Deconnection</q-item-label>
               </q-item-section>
@@ -46,7 +49,7 @@
         <q-header class="bg-secondary">
           <q-toolbar>
             <q-btn flat @click="drawer = !drawer" round dense icon="menu" />
-            <q-toolbar-title>Header</q-toolbar-title>
+            <q-toolbar-title>{{user.username}}</q-toolbar-title>
             <q-btn flat v-close-popup round dense icon="close" />
           </q-toolbar>
         </q-header>
@@ -74,8 +77,9 @@
                 transition-next="jump-up"
               >
                 <q-tab-panel name="Profile">
-                  <div class="text-h4 q-mb-md">Profile</div>
-                  <div></div>
+                  <div class="text-h4 q-mb-md">Public profile</div>
+                  <q-separator />
+                  <profile-header @updateUSer="updateUserData" :user='user'></profile-header>
                 </q-tab-panel>
 
                 <q-tab-panel name="Changes">
@@ -100,23 +104,28 @@
   <div v-if="!isLogin">
     <login-view @custon-event-name="handelEventFromChild"></login-view>
   </div>
-  <div v-else>
-    <router-view></router-view>
+  <div v-else class="page-sizer">
+    <router-view @deleteAccountEvent="handelDeleteEvent" ></router-view>
   </div>
 </template>
 
 <script>
 import LoginVue from './components/Login.vue';
 import { ref } from 'vue';
+import { getUserByID } from './components/usersRequest'
+import ProfileHeaderVue from './components/ProfileHeaderVue.vue';
 
 export default {
   name: "App",
   components: {
-    "login-view": LoginVue
-  },
+    "login-view": LoginVue,
+    "profile-header": ProfileHeaderVue,
+},
   data() {
     return {
       isLogin: false,
+      drawerLeft: ref(false),
+
     }
   },
   setup () {
@@ -129,6 +138,9 @@ export default {
       lorem: 'Lorem ipsum dolor sit amet consectetur, adipisicing elit. Natus, ratione eum minus fuga, quasi dicta facilis corporis magnam, suscipit at quo nostrum!',
       tab: ref('mails'),
       fab2: ref(false),
+      user: ref(null),
+      admin: ref(true),
+
     }
   },
   methods: {
@@ -136,14 +148,43 @@ export default {
       console.log('redirect_to: ', name_comp)
       this.$router.push({ name: name_comp, params: { userid: 0, workingtimeid: 0, username: "unknown"} })
     },
-    mounted() {
-      if (localStorage.userID)
-        this.userId = localStorage.userID;
-    },
-    handelEventFromChild(payload) {
+    async handelEventFromChild(payload) {
       console.log("payload")
       if (payload.message === "success")
         this.isLogin = true;
+      await this.getUserInfo()
+    },
+    disconnectFunc() {
+      localStorage.removeItem('userID')
+      this.isLogin = false;
+      this.$forceUpdate();
+    },
+    checkIfUserExist() {
+      if (!localStorage.getItem('userID'))
+        this.isLogin = false
+    },
+    handelDeleteEvent(payload) {
+      console.log(payload);
+      if (payload.message === "deleted") {
+        this.isLogin = false
+      }
+    },
+    async getUserInfo() {
+      getUserByID(localStorage.userID).then(
+        response => {
+          this.user = response.data.data
+          console.log(this.user)
+        },
+        err => console.log(err)
+      )
+    },
+    async updateUserData(payload) {
+      if (payload.message === "Updated") {
+        await this.getUserInfo();
+      }
+    },
+    activeDrawer() {
+      this.drawerLeft = !this.drawerLeft
     }
   }
 };
@@ -163,4 +204,10 @@ export default {
 h1 {
     font-size: calc(1.5rem + 3vw);
 }
+
+.page-sizer {
+  display: flex;
+  justify-content: center;
+}
+
 </style>

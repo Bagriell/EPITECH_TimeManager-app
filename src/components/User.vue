@@ -32,44 +32,23 @@
       </q-card>
     </div>
     <div class="delete-button">
-      <q-btn class="glossy" rounded color="deep-orange" label="Delete Account" @click="confirm = true" />
+      <delete @deleteUser="handelUserDelete" :id='id'></delete>
     </div>
   </div>
-
-  <q-dialog v-model="confirm" persistent>
-    <q-card>
-      <q-card-section class="row items-center">
-        <q-avatar icon="delete" color="secondary" text-color="white" />
-        <span class="q-ml-sm">Are you sure you want delete this account ?</span>
-      </q-card-section>
-
-      <q-card-actions align="right">
-        <q-btn flat label="Cancel" color="secondary" v-close-popup />
-        <q-btn flat label="Confirme" color="secondary" v-close-popup @click="deleteUser()" />
-      </q-card-actions>
-    </q-card>
-  </q-dialog>
 </template>
 
 <script>
-import {createUser, updateUser, getAllUsers, deleteUser, getUserByUsernameAndEmail} from './usersRequest'
-import { ref } from 'vue';
+import { updateUser, getAllUsers} from './usersRequest'
+import DeleteVue from './Delete.vue'
 
 export default {
   name: "User",
-  components: {},
+  emits: ["deleteAccountEvent"],
+  components: {
+    'delete': DeleteVue
+  },
   methods: {
-    // CREATE a new User, using username + email combo. THEN it store the id,email,username in the data of the component
-    async create() {
-      await createUser(this.user.username, this.user.email).then(
-        response => {
-          this.user.id = response.data.data.id;
-          this.user.username = response.data.data.username;
-          this.user.email = response.data.data.email;
-        }
-      );
-    },
-      // UPDATE the current User, using username + email combo. THEN it update the email,username in the data of the component
+    // UPDATE the current User, using username + email combo. THEN it update the email,username in the data of the component
     async update() {
       await updateUser(this.user.username, this.user.email, this.user.id).then(
         response => {
@@ -80,25 +59,6 @@ export default {
           console.log(response);
         }
       )
-    },
-    // GET the current user, using Username and Email combo. THEN it update the id,username,email in the data of the component AND STORE the ID value of the response to the Local Storage.
-    async get() {
-      await getUserByUsernameAndEmail(this.user.username, this.user.email).then(
-        response => {
-          
-          this.user.username = response.data.data[0].username;
-          this.user.email = response.data.data[0].email;
-          this.user.id = response.data.data[0].id;
-          
-          localStorage.userID = response.data.data[0].id;
-          
-          // DEBUG LOG - For testing
-          console.log("USERNAME : " + response.data.data[0].username);
-          console.log("EMAIL : " + response.data.data[0].email);
-          console.log("ID : " + response.data.data[0].id);
-          console.log(response);
-        }
-      );
     },
     async getAll() {
       await getAllUsers().then(
@@ -120,14 +80,14 @@ export default {
     // Simply SHOW / HIDE Input fields for updating the current Username and Email of the User
     showEditWindow() {this.editUserInfo = !this.editUserInfo},
     // DELETE ACTIVE/NEWLY CREATED USER using the correct ID, AND REMOVE LOCAL STORAGE KEY
-    async deleteActiveUser() {
-        await deleteUser(this.user.id);
-        localStorage.removeItem("userID");
-    },
     // SWITCH BETWEEN COMPONENTS (Working Times, Clock...)
     redirect_to(name_comp) {
       console.log('redirect_to: ', name_comp)
       this.$router.push({ name: name_comp, params: { userid: 0, workingtimeid: 0, username: "unknown"} })
+    },
+    handelUserDelete(payload) {
+      if (payload.message === "deleted")
+        this.$emit('deleteAccountEvent', {message: "deleted"})
     }
   },
   data() {
@@ -142,13 +102,13 @@ export default {
       queries: {
         baseURL: "http://localhost:4000/api/users",
       },
+      id: localStorage.userID,
       users: {
         id: [],
         username: [],
         email: [],
       },
       lorem: 'Lorem ipsum dolor sit amet consectetur, adipisicing elit. Natus, ratione eum minus fuga, quasi dicta facilis corporis magnam, suscipit at quo nostrum!',
-      confirm: ref(false),
     };
   },
 };
