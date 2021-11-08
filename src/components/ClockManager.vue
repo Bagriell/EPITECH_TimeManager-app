@@ -2,12 +2,12 @@
   <div>
     <div class="q-pa-md">
       <div class="q-gutter-md">
+        <div v-if="this.clock.status === false">
         <q-time 
           v-model="this.clock.time"
-          mask="hh:mm A" 
+          mask="hh:mm A"
           readonly
         />
-        <div v-if="this.clock.status === false">
           <q-btn 
             label="Start"
             type="submit" 
@@ -16,6 +16,12 @@
             />
         </div>
         <div v-else-if="this.clock.status === true">
+        <q-time 
+          v-model="this.clock.elapsed"
+          with-seconds
+          format24h
+          readonly
+        />
           <q-btn 
             label="Stop"
             type="submit" 
@@ -54,7 +60,8 @@ export default {
 
       // if (this.clock.status)
         // this.add()
-      
+      // if (this.clock.status)
+        
       console.log(this.clock.status? 
         "Started Working Day at: " + this.clock.time :
         "Finish worked at: " + this.clock.time);
@@ -74,9 +81,11 @@ export default {
         role: Role.User
       },
       clock: {
-        time: moment().format('h:mm A'),
+        time: moment().format('hh:mm A'),
         status: false,
-        reset() {this.time = moment().format('h:mm A'); this.status = false;},
+        counter: 0,
+        elapsed: moment().hour(0).minute(0).second(this.counter++).format('hh : mm : ss'),
+        reset() {this.time = moment().format('hh:mm A'); this.status = false;},
       }
     };
   },
@@ -84,9 +93,9 @@ export default {
     if (localStorage.userID) {
       this.user.id = localStorage.getItem("userID");
     }
-      this.clock.time = moment().format('h:mm A');
-    this.interval=setInterval(() => {
-      this.clock.time = moment().format('h:mm A');
+    this.interval = setInterval(() => {
+      this.clock.status? this.clock.time = moment().format('hh:mm A')
+      : this.clock.elapsed = moment().hour(24).minute(59).second(this.clock.counter++).format('hh:mm:ss')//(this.clock.time - moment().format('hh:mm:ss A'));
       // this.get(); -- API CALL TO GET TIME EVERY SEC
     }, 1000)
   },
